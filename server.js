@@ -8,8 +8,18 @@ app.use('/socket.io', express.static(__dirname + '/node_modules/socket.io-client
 
 app.use(express.static(__dirname + '/public'));
 
-io.on('connection', function () {
+io.on('connection', function (socket) {
 	console.log('user connected via socket.io!');
+
+	socket.on('message', function (message) {
+		console.log('message recieved: ' + message.text);
+
+		socket.broadcast.emit('message', message);
+	});
+
+	socket.emit('message', {
+		text: 'welcome to the chat app'
+	});
 });
 
 http.listen(PORT, function () {
