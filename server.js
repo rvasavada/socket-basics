@@ -3,8 +3,11 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var moment = require('moment');
+
 app.use('/jquery', express.static(__dirname + '/node_modules/jquery/dist/'));
 app.use('/socket.io', express.static(__dirname + '/node_modules/socket.io-client/dist/'));
+app.use('/moment', express.static(__dirname + '/node_modules/moment/'));
 
 app.use(express.static(__dirname + '/public'));
 
@@ -14,11 +17,15 @@ io.on('connection', function (socket) {
 	socket.on('message', function (message) {
 		console.log('message recieved: ' + message.text);
 
+		message.timestamp = moment.valueOf();
 		io.emit('message', message);
 	});
 
+	// timestamp property - Javascript timestamp (miliseconds)
+
 	socket.emit('message', {
-		text: 'welcome to the chat app'
+		text: 'welcome to the chat app',
+		timestamp: moment.valueOf()
 	});
 });
 
