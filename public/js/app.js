@@ -4,23 +4,30 @@ var socket = io();
 
 console.log(name + ' wants to join ' + room);
 
+// Update h1 tag
+jQuery('.room-title').text(room);
 
-socket.on('connect', function(socket) {
-	console.log('connected to socket.io server!');
+socket.on('connect', function (socket) {
+	console.log('Conncted to socket.io server!');
 });
 
-socket.on('message', function(message) {
-	//var momentTimestamp
-	var momentTimestamp = moment.utc(message.timestamp).local().format('MMM Do YYYY, h:mm a');
+socket.emit('joinRoom', {
+	name: name,
+	room: room
+});
+
+socket.on('message', function (message) {
+	var momentTimestamp = moment.utc(message.timestamp);
 	var $message = jQuery('.messages');
 
-	console.log('new message: ' + message.text);
+	console.log('New message:');
+	console.log(message.text);
 
-	$message.append('<p><strong>'+ message.name + ' ' + momentTimestamp + '</strong></p>');
-	$message.append('<p>'+ message.text + '</p>')
+	$message.append('<p><strong>' + message.name + ' ' + momentTimestamp.local().format('h:mm a') + '</strong></p>');
+	$message.append('<p>' + message.text + '</p>');
 });
 
-//handles submitting of new message
+// Handles submitting of new message
 var $form = jQuery('#message-form');
 
 $form.on('submit', function (event) {
